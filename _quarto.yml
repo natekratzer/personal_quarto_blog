@@ -3,14 +3,20 @@ project:
 
 website:
   title: "Nate Kratzer"
+  site-url: https://www.natekratzer.com/
+  description: "A data science blog"
   google-analytics: G-9PPZMMCZD8
   navbar:
     right:
       - about.qmd
+      - icon: rss
+        href: index.xml
       - icon: github
         href: https://github.com/natekratzer
       - icon: mastodon
         href: https://fosstodon.org/@natekratzer
+  margin-header: subscribe.html
+
 format:
   html:
     theme: cerulean

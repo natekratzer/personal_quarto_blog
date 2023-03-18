@@ -6,3 +6,6 @@ freeze: true
 
 # Enable banner style title blocks
 title-block-banner: false
+
+# Turn on table of content for all posts
+toc: true
