@@ -1,0 +1,19 @@
+---
+title: "About"
+image: avatar.png
+about:
+  template: jolla
+  links:
+    - icon: mastodon
+      text: Mastodon
+      href: https://fosstodon.org/@natekratzer
+    - icon: linkedin
+      text: LinkedIn
+      href: https://www.linkedin.com/in/nate-kratzer-33540571/
+    - icon: github
+      text: Github
+      href: https://github.com/natekratzer
+
+---
+
+I'm a data scientist with an interest in public policy, statistics, and coding. This blog is mostly to help me organize my thoughts, although I may sometimes also use it to share policy analysis. 

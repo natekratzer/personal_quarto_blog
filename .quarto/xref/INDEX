@@ -1,0 +1,23 @@
+{
+  "index.qmd": {
+    "index.html": "12b58d73"
+  },
+  "about.qmd": {
+    "about.html": "08176cae"
+  },
+  "posts/post-with-code/index.qmd": {
+    "index.html": "d4acfb83"
+  },
+  "posts/welcome/index.qmd": {
+    "index.html": "2fd58f70"
+  },
+  "posts/partitioned_regression/index.qmd": {
+    "index.html": "698422ac"
+  },
+  "posts/collider_bias/index.qmd": {
+    "index.html": "dc8545f3"
+  },
+  "posts/census_internet_microdata/index.qmd": {
+    "index.html": "f18da1dc"
+  }
+}
