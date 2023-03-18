@@ -3,6 +3,7 @@ project:
 
 website:
   title: "Nate Kratzer"
+  google-analytics: G-9PPZMMCZD8
   navbar:
     right:
       - about.qmd
