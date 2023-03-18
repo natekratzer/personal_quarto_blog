@@ -17,3 +17,5 @@ about:
 ---
 
 I'm a data scientist with an interest in public policy, statistics, and coding. This blog is mostly to help me organize my thoughts, although I may sometimes also use it to share policy analysis. 
+
+I've also included a handful of posts about policy, economics, and religion from an old and deprecated blog that I used to run. 

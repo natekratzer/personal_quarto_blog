@@ -3,6 +3,7 @@ title: "Think before adding more variables to that analysis"
 description: "An introduction to thinking about causal models for data analysis. The purpose is to demonstrate that the popular approach of simply gathering as much data as you can and controlling for it via regression or other methods is not a good one, and is actively misleading in many cases. We should instead carefully think about plausible causal models using tools like diagrams (directed acyclic graphs, or DAGs) and then do data analysis in accordance with those models."
 date: '2022-03-19'
 categories: [Python, Causal Inference, Policy, Statistics]
+toc: true
 image: "gd_dag.png"
 ---
 
