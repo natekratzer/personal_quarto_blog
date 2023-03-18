@@ -15,6 +15,11 @@ format:
   html:
     theme: cerulean
     css: styles.css
+comments: 
+  utterances: 
+    repo: natekratzer/blog_comments
+  
+
 
 
 
