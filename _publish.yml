@@ -1,4 +1,4 @@
 - source: project
   netlify:
-    - id: "fd3a7833-b887-4f83-bd74-55f3f9a8e59c"
-      url: "https://www.natekratzer.com/"
+    - id: fd3a7833-b887-4f83-bd74-55f3f9a8e59c
+      url: 'https://www.natekratzer.com'
