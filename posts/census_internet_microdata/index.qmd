@@ -1110,6 +1110,8 @@ To map the data you'll need to first get shapefiles for Public Use Microdata Are
 There are a lot of options for mapping in R. I've chosen to use `sf` and `ggplot2` because it works well with the tidyverse and uses familiar ggplot2 syntax. I really like the `leaflet` package for making interactive maps, but static maps also have their place, and that's what I've gone with here. 
 
 ```{r}
+#| warning: false
+
 # Set up shapefile as an sf object
 ky_shp <- readOGR("tl_2019_21_puma10", layer = "tl_2019_21_puma10", GDAL1_integer64_policy = TRUE, verbose = FALSE)
 ky_shp@data$PUMA <- as.numeric(as.character(ky_shp@data$PUMACE10))
