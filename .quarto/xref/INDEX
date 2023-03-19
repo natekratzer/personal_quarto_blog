@@ -52,5 +52,11 @@
   },
   "posts/what_is_education_for/index.qmd": {
     "index.html": "7ee71c5e"
+  },
+  "license.md": {
+    "license.html": "aa840ef3"
+  },
+  "posts/simpsons_paradox/index.qmd": {
+    "index.html": "bcd8e0da"
   }
 }

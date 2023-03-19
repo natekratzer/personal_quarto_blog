@@ -109,13 +109,17 @@ One advantage of the partitioned regression is that it allows us to look at the 
 #| warning: false
 plt_df = pd.DataFrame(data = {'Adjusted Bill Length': residuals_y_on_X, 'Adjusted Bill Depth': residuals_z_on_X})
 
-sp = alt.Chart(plt_df, title = "Bill Depth and Bill Length (Adjusted)").mark_circle().encode(
+sp_pr = alt.Chart(plt_df, title = "Bill Depth and Bill Length (Adjusted)").mark_circle().encode(
     alt.X('Adjusted Bill Depth', scale = alt.Scale(zero = False)),
     alt.Y('Adjusted Bill Length', scale = alt.Scale(zero = False)),
 )
 
-sp + sp.transform_regression('Adjusted Bill Depth', 'Adjusted Bill Length').mark_line()
+plt_pr = sp_pr + sp_pr.transform_regression('Adjusted Bill Depth', 'Adjusted Bill Length').mark_line()
+
+plt_pr
 ```
+
+![](part_reg.png)
 
 A disadvantage of using scikit learn is that it doesn't give us traditional regression statistics. The easiest way to get those is through statsmodels, which shows the expected 0.313 coefficent and tells us the standard error is 0.154 with a p-value of .043. This tells us it is actually a statistically significant relationship, so without the visual evidence from the scatterplot above, we might assume it's a stronger relationship than it actually is. It is unlikely to have occured purely by chance, but that doesn't mean it's necessarily tightly correlated or has a large effect size. 
 
@@ -134,12 +138,14 @@ Finally, we might interested in how different this picture is from the unadjuste
 ```{python}
 #| warning: false
 
-sp = alt.Chart(df, title = "Bill Depth and Bill Length (Unadjusted)").mark_circle().encode(
+sp_lr = alt.Chart(df, title = "Bill Depth and Bill Length (Unadjusted)").mark_circle().encode(
     alt.X('bill_depth_mm', title = 'Bill Depth', scale = alt.Scale(zero = False)),
     alt.Y('bill_length_mm', title = 'Bill Length', scale = alt.Scale(zero = False)),
 )
 
-sp + sp.transform_regression('bill_depth_mm', 'bill_length_mm').mark_line()
+plt_lr = sp_lr + sp_lr.transform_regression('bill_depth_mm', 'bill_length_mm').mark_line()
+
+plt_lr
 ```
 
 This difference and sign reversal is mostly because of the relationships between species, bill length, and bill depth. But that's a subject for a post about Simpson's paradox.  
