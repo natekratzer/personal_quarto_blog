@@ -1,0 +1,115 @@
+---
+title: "Mapping Census Data with Python"
+description: "A tutorial on how to make maps by pulling census data into Python"
+date: '2023-03-26'
+categories: [Python, Census, GeoPandas, Kentucky, Louisville]
+toc: true
+image: "ky_internet.png"
+draft: true
+---
+
+
+```{python}
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import requests
+```
+
+The census has shapefiles here: https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+
+
+```{python}
+county_shp = gpd.read_file('cb_2021_us_county_500k.zip')
+ky_counties = county_shp[county_shp.STATE_NAME == 'Kentucky']
+```
+
+```{python}
+ky_counties.explore()
+```
+
+The American Community Survey collects information about internet access in [table S2801](https://data.census.gov/table?q=internet&g=040XX00US21$0500000&tid=ACSST1Y2021.S2801). However, as you can see below, downloading data from data.census.gov is a formatting nightmare, so I'm going to use the API instead. 
+
+```{python}
+#downloaded from data.census.gov
+df = pd.read_csv("ky_county_internet.csv")
+df.head()
+```
+
+Census variables names are not easy to find in data.census.gov, but I used data.census.gov to figure out what table I needed for internet access: table S2801 or B28003
+
+Then I found the [variables table for ACS 5 year data](https://api.census.gov/data/2021/acs/acs5/variables.html) and searched for S2801. It wasn't there, but B28003 was and contains the same information in raw counts without the summary percentages. It'll be easy enough to recompute those. 
+
+I want to know what percent of households have internet access, not including cell phone only internet access. Variable B28002_007EA tells me how many households have an internet subscription that isn't dial up or cellular. Variable B28002_001E gives me the total population, which I'll need to compute percentages. 
+
+There is a `census` python package, but it doesn't make things that much simpler than it is to just use the API directly using the more popular and generic python library `requests`. 
+
+```{python}
+import requests
+```
+
+You need your own census API key, which is [available here](https://api.census.gov/data/key_signup.html). I saved mine in a text file to avoid putting it into the blog directly. 
+
+```{python}
+with open('census_api_key.txt') as key:
+    api_key=key.read().strip()
+
+year = '2021'
+dsource = 'acs'
+dname = 'acs5'
+state = '21'
+
+base_url = f'https://api.census.gov/data/{year}/{dsource}/{dname}'
+
+cols = 'NAME,B28002_001E,B28002_007E' #NAME of geograph as well as the variables I want to pull
+geo = 'county' #county geography level
+state = 'state:21' #21 is the FIPS code for Kentucky
+
+data_url = f'{base_url}?get={cols}&for={geo}&in={state}&key={api_key}'
+
+response = requests.get(data_url)
+print(response.text)
+```
+
+```{python}
+data = response.json()
+df = (pd.DataFrame(data = data[1:], columns = data[0])
+        .rename(columns = {'NAME' : 'county_name',
+                           'B28002_001E' : 'population',
+                           'B28002_007E': 'pop_int_access',
+                           'state' : 'state_fips',
+                           'county' : 'county_fips'}))
+df['fips'] = df['state_fips'] + df['county_fips'] # make sure these are strings
+
+#but we need to change the data to be numeric
+df[['population', 'pop_int_access']] = df[['population', 'pop_int_access']].apply(pd.to_numeric)
+df['percent_int'] = np.round(100 * (df['pop_int_access']/df['population']), 1)
+
+df.head()
+```
+
+```{python}
+ky_counties['fips'] = ky_counties['STATEFP'] + ky_counties['COUNTYFP']
+
+df_map = (ky_counties.merge(df, how = 'left', on = 'fips')
+                    .rename(columns = {'NAME' : 'County Name',
+                                       'percent_int' : 'Home Internet Access (%)',
+                                       'population' : 'County Population'}))
+df_map.head()
+```
+
+```{python}
+df_map.explore(
+    column = 'Home Internet Access (%)',
+    tooltip = ['County Name', 'Home Internet Access (%)', 'County Population'],
+    tiles = 'CartoDB positron', #fades into the background better than the default
+    style_kwds=dict(color="black") #outlines stay black for a crisper feel
+)
+```
+
+# Tract level analysis
+
+```{python}
+# if downloading from census, read in as a zip file: https://geopandas.org/en/stable/docs/user_guide/io.html
+ky_shp = gpd.read_file('cb_2021_21_tract_500k.zip')
+```
