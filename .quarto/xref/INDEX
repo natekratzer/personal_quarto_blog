@@ -58,5 +58,8 @@
   },
   "posts/simpsons_paradox/index.qmd": {
     "index.html": "bcd8e0da"
+  },
+  "posts/census_map/index.qmd": {
+    "index.html": "f113a5cd"
   }
 }

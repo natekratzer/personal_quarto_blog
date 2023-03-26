@@ -1,13 +1,16 @@
 ---
 title: "Mapping Census Data with Python"
-description: "A tutorial on how to make maps by pulling census data into Python"
+description: "A tutorial on how to make maps by pulling Census data into Python"
 date: '2023-03-26'
-categories: [Python, Census, GeoPandas, Kentucky, Louisville]
+categories: [Python, Census, GeoPandas, Kentucky, Louisville, Internet]
 toc: true
 image: "ky_internet.png"
-draft: true
+draft: false
 ---
 
+This post covers two useful skils, making maps and acessing Census data. Most of the python map making tutorials I found online showed how to make maps using data that already came with the library, and didn't have many notes on how the data is formatted or how to bring in new data.  
+
+In addition to the standard analysis library `numpy` and `pandas`, we're going to use `GeoPandas` for mapping data and the `requests` library for getting Census data 
 
 ```{python}
 import numpy as np
@@ -16,89 +19,98 @@ import geopandas as gpd
 import requests
 ```
 
-The census has shapefiles here: https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html
+#  The Initial Map Layer
 
+The census has shapefiles [here](https://www.census.gov/geographies/mapping-files/time-series/geo/cartographic-boundary.html) and I've downloaded a zip file of all counties in the United States. I'll filter it down to just Kentucky for this example.
+
+[GeoPandas](https://geopandas.org/en/stable/index.html) works well with census shapefiles out of the box. Don't unzip the downloaded file, it can be read straight into a GeoPandas dataframe, which resembles a pandas dataframe, but with an additional column of geographic attributes.
 
 ```{python}
 county_shp = gpd.read_file('cb_2021_us_county_500k.zip')
 ky_counties = county_shp[county_shp.STATE_NAME == 'Kentucky']
 ```
 
+Geopandas also provides built-in integrations with both matplotlib (for static maps) and folium (for interactive maps). Folium is a python wrapper for leaflet, which produces interactive maps. Producing the initial map layer is straightforward using the built in explore method. 
+
 ```{python}
 ky_counties.explore()
 ```
 
-The American Community Survey collects information about internet access in [table S2801](https://data.census.gov/table?q=internet&g=040XX00US21$0500000&tid=ACSST1Y2021.S2801). However, as you can see below, downloading data from data.census.gov is a formatting nightmare, so I'm going to use the API instead. 
+# Getting Census Data
+
+I'm going to use internet access as our example data. The American Community Survey collects information about internet access in [table S2801](https://data.census.gov/table?q=internet&g=040XX00US21$0500000&tid=ACSST1Y2021.S2801). However, downloading data from data.census.gov is a formatting nightmare, because there's no clear geography column to match on and the data seems to only be available in an oddly nested structure. Instead, I'm going to use the Census API.
+
+I used data.census.gov to figure out what tables contained information on internet access. Then I found the [variables table for ACS 5 year data](https://api.census.gov/data/2021/acs/acs5/variables.html) and searched for table S2801. It wasn't there, but B28003 was and contains the same information in raw counts without the summary percentages. It'll be easy enough to recompute the percentages. 
+
+I want to know what percent of households have internet access, not including cell phone only internet access or dial-up. Variable B28002_007E tells me how many households have an internet subscription that isn't dial up or cellular. Variable B28002_001E gives me the total population. 
+
+There is a `census` python package, but it doesn't make things that much simpler than it is to just use the API directly using the more popular and generic python library `requests`. You need your own census API key, which is [available here](https://api.census.gov/data/key_signup.html). I saved mine in a text file to avoid putting it into the blog directly. 
+
+Putting together the request to the api involves constructing a long url string out of multiple pieces. An advantage of pasting together the pieces from separate variables is that it makes it easier to modify this example to suit your use case. 
 
 ```{python}
-#downloaded from data.census.gov
-df = pd.read_csv("ky_county_internet.csv")
-df.head()
-```
-
-Census variables names are not easy to find in data.census.gov, but I used data.census.gov to figure out what table I needed for internet access: table S2801 or B28003
-
-Then I found the [variables table for ACS 5 year data](https://api.census.gov/data/2021/acs/acs5/variables.html) and searched for S2801. It wasn't there, but B28003 was and contains the same information in raw counts without the summary percentages. It'll be easy enough to recompute those. 
-
-I want to know what percent of households have internet access, not including cell phone only internet access. Variable B28002_007EA tells me how many households have an internet subscription that isn't dial up or cellular. Variable B28002_001E gives me the total population, which I'll need to compute percentages. 
-
-There is a `census` python package, but it doesn't make things that much simpler than it is to just use the API directly using the more popular and generic python library `requests`. 
-
-```{python}
-import requests
-```
-
-You need your own census API key, which is [available here](https://api.census.gov/data/key_signup.html). I saved mine in a text file to avoid putting it into the blog directly. 
-
-```{python}
+#load API key
 with open('census_api_key.txt') as key:
     api_key=key.read().strip()
 
+#specify the data source by year and survey
 year = '2021'
-dsource = 'acs'
-dname = 'acs5'
-state = '21'
-
+dsource = 'acs' #American Community Survey
+dname = 'acs5' #5 year average from American Community Survey
 base_url = f'https://api.census.gov/data/{year}/{dsource}/{dname}'
 
-cols = 'NAME,B28002_001E,B28002_007E' #NAME of geograph as well as the variables I want to pull
+#unique to this specific data request
+cols = 'NAME,B28002_001E,B28002_007E' #NAME of geography as well as the variables I want to pull
 geo = 'county' #county geography level
 state = 'state:21' #21 is the FIPS code for Kentucky
 
+#add unique request features to the base_url
 data_url = f'{base_url}?get={cols}&for={geo}&in={state}&key={api_key}'
 
+#go get the data
 response = requests.get(data_url)
-print(response.text)
-```
 
-```{python}
+#take the data in json and format it into a dataframe
 data = response.json()
-df = (pd.DataFrame(data = data[1:], columns = data[0])
+df = (pd.DataFrame(data = data[1:], columns = data[0]) #first row is column names, everything else is data.
         .rename(columns = {'NAME' : 'county_name',
                            'B28002_001E' : 'population',
                            'B28002_007E': 'pop_int_access',
                            'state' : 'state_fips',
                            'county' : 'county_fips'}))
-df['fips'] = df['state_fips'] + df['county_fips'] # make sure these are strings
 
-#but we need to change the data to be numeric
+#the fips for a county is a concatenation of state and county fips
+df['fips'] = df['state_fips'] + df['county_fips'] #make sure these are strings so it concatenates and doesn't add. 
+
+#changing the data to be numeric, since everything starts as string
 df[['population', 'pop_int_access']] = df[['population', 'pop_int_access']].apply(pd.to_numeric)
+
+#calculating percent with internet access
 df['percent_int'] = np.round(100 * (df['pop_int_access']/df['population']), 1)
 
 df.head()
 ```
 
+# Mapping the Data
+
+Now that we have our data, we need to combine it back into our map dataset. A nice thing about GeoPandas is that we can work with it the same way we work with a pandas dataframe.
+
+We'll still use the explore method from GeoPandas to map, and to create a chloropleth map we set the column argument to the name of the column we want to use to shade the map. We can specify what information goes in the tooltip by passing a list of column names. I've also set a few other options to change the map background to something a bit more muted and bring out the lines between the counties a bit more cleanly. 
+
 ```{python}
+#| warning: false
+
+#construct the fips code to match with the geography data
+#matching on fips is generally preferable to matching on county name because of potential formatting differences in names. 
 ky_counties['fips'] = ky_counties['STATEFP'] + ky_counties['COUNTYFP']
 
+#merge in the new data
+#clean up the names to be a bit more presentable
 df_map = (ky_counties.merge(df, how = 'left', on = 'fips')
-                    .rename(columns = {'NAME' : 'County Name',
+                     .rename(columns = {'NAME' : 'County Name',
                                        'percent_int' : 'Home Internet Access (%)',
                                        'population' : 'County Population'}))
-df_map.head()
-```
 
-```{python}
 df_map.explore(
     column = 'Home Internet Access (%)',
     tooltip = ['County Name', 'Home Internet Access (%)', 'County Population'],
@@ -109,7 +121,69 @@ df_map.explore(
 
 # Tract level analysis
 
+To show the flexibility of this approach and out of personal curiosity, let's switch from county level data to tract level data and zoom in on Louisville, Kentucky (Jefferson County). The Census Bureau's [example API queries](https://api.census.gov/data/2021/acs/acs5/examples.html) are extremely useful once you've mastered the basics. Here we have to change the geography request from county to tract, and then add a filter to restrict it to Jefferson County, Kentucky.
+
+The tract numbers aren't easily interpretable, which is one place where the interactive background map can be very helpful. You can zoom in and see the default neighborhood names in the background map, as well as major roads and interstates that allow people familiar with Louisville to understand where each census tract is located. 
+
+The code here is a little repetitive with the code for Kentucky counties, and if we were doing this frequently we'd want to factor out the common parts into functions (i.e. a function that did the routine data processing post-API call and another function that set all the default styles for the map).
+
 ```{python}
+## First we need a tract level map, downloaded from the same census collection
+
 # if downloading from census, read in as a zip file: https://geopandas.org/en/stable/docs/user_guide/io.html
 ky_shp = gpd.read_file('cb_2021_21_tract_500k.zip')
+lou_shp = ky_shp[ky_shp['COUNTYFP'] == '111']
+
+## Now pulling Census data
+
+#we can use the same base_url, but the data_url needs to be updated
+#the variables we want to pull stay the same
+cols = 'NAME,B28002_001E,B28002_007E' #NAME of geography as well as the variables I want to pull
+geo = 'tract' #county geography level
+state = 'state:21' #21 is the FIPS code for Kentucky
+county = 'county:111' #111 is the FIPs code for Jefferson County, KY
+
+#add unique request features to the base_url
+data_url = f'{base_url}?get={cols}&for={geo}&in={state}&in={county}&key={api_key}'
+
+#go get the data
+response = requests.get(data_url)
+
+#clean up the data into a dataframe
+data = response.json()
+
+df = (pd.DataFrame(data = data[1:], columns = data[0]) #first row is column names, everything else is data.
+        .rename(columns = {'NAME' : 'tract_name',
+                           'B28002_001E' : 'population',
+                           'B28002_007E': 'pop_int_access',
+                           'state' : 'state_fips',
+                           'county' : 'county_fips',
+                           'tract' : 'tract_fips'}))
+
+#the fips for a tract is a concatenation of state, county, and tract fips
+df['fips'] = df['state_fips'] + df['county_fips'] + df['tract_fips'] #make sure these are strings so it concatenates and doesn't add. 
+
+#changing the data to be numeric, since everything starts as string
+df[['population', 'pop_int_access']] = df[['population', 'pop_int_access']].apply(pd.to_numeric)
+
+#calculating percent with internet access
+df['percent_int'] = np.round(100 * (df['pop_int_access']/df['population']), 1)
+
+#tract fips is in our shape file already as GEOID
+lou_map = (lou_shp.merge(df, how = 'left', left_on = 'GEOID', right_on = 'fips')
+                    .rename(columns = {'tract_name' : 'Tract Number',
+                                       'percent_int' : 'Home Internet Access (%)',
+                                       'population' : 'Tract Population'}))
+
+#tracts are pretty small in the map, so I've opted against the black boundary outlines
+lou_map.explore(
+    column = 'Home Internet Access (%)',
+    tooltip = ['Tract Number', 'Home Internet Access (%)', 'Tract Population'],
+    tiles = 'CartoDB positron' #fades into the background better than the default
+)
 ```
+
+
+# More on Internet Access
+
+When schools were moving to remote learning during Covid, I made a [much longer post](https://www.natekratzer.com/posts/census_internet_microdata/) on how to use Census microdata to analyze at an individual level how internet access relates not only to geography, but also to race, poverty, and age. Internet access remains an important consideration. There seems to me to be an assumption that internet access is widespread in the United States. While people may have some access through libraries and cell phone data, there is a large gap in terms of who has reliable home internet access that can be used for work and homework.
