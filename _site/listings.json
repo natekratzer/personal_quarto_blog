@@ -2,6 +2,7 @@
   {
     "listing": "/index.html",
     "items": [
+      "/posts/simpsons_paradox/index.html",
       "/posts/census_map/index.html",
       "/posts/partitioned_regression/index.html",
       "/posts/collider_bias/index.html",

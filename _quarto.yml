@@ -6,6 +6,7 @@ website:
   site-url: https://www.natekratzer.com/
   description: "A data science blog"
   google-analytics: G-9PPZMMCZD8
+  open-graph: true
   navbar:
     right:
       - about.qmd

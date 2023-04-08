@@ -1,18 +1,20 @@
 ---
 title: "Simpson's Paradox"
 description: "Simpson's Paradox illustrated with Penguins"
-date: '2023-03-20'
-categories: [Python, Causal Inference, Policy, Statistics]
+date: '2023-04-08'
+categories: [Python, Causal Inference, Statistics]
 toc: true
 image: "simpsons_penguins.png"
-draft: true
+draft: false
 ---
 
 Simpson's paradox is not actually a paradox, but it is an interesting result in statistical analysis with an important lesson for data scientists. The level of aggregation of your data and analysis can entirely change the results. Simpson's paradox is the idea that a relationship that holds at one level of aggregation may not exist or may even go in the opposite direction at other levels of aggregation. 
 
-To demonstrate with a concrete example, let's look at some [Palmer Penguin](https://allisonhorst.github.io/palmerpenguins/) data and the relationship between bill length and bill depth. 
+To demonstrate with a concrete example, let's look at some [Palmer Penguins](https://allisonhorst.github.io/palmerpenguins/) data and the relationship between bill length and bill depth. 
 
 ![](culmen_depth.png)
+
+## Import libraries and load data
 
 ```{python}
 import numpy as np
@@ -23,6 +25,8 @@ from palmerpenguins import load_penguins
 df = load_penguins()
 df.head()
 ```
+
+## Plot the data
 
 ```{python}
 #| warning: false
@@ -48,11 +52,21 @@ plt_grouped = sp_grouped + sp_grouped.transform_regression('bill_depth_mm', 'bil
 
 #rendering somehow loses the first image? Odd bug in quarto, I think.
 #but if print here it will correctly print later
-plt_grouped
+plt_ungrouped
 ```
 
+## Misleading analysis from high level data
+
 ```{python}
-plt_grouped & plt_ungrouped
+plt_ungrouped
+```
+
+When we look at bill length and bill depth in an initial scatterplot it seems as though penguins with deeper bills tend to also have shorter bills. While this is technically true in our selection of penguins, it's also very misleading because we haven't done anything to account for the different species of penguins that make up our sample. 
+
+## The effect reverses when accounting for penguin species
+
+```{python}
+plt_grouped
 ```
 
 The underlying scatterplots here are the identical, but we see very different relationships between bill depth and length. Within each penguin species, penguins that have bigger bills tend to have bigger bills in terms of both length and depth. But Adelie penguins tend to have deep and short bills compared to Gentoo penguins, which are longer and narrower. Even though we have individual penguin data, we'd still be mislead if we didn't account for the groups. This is also a place where traditional statistical techniques can help us if we're building a model that includes species in the data. A major problem here is that you don't always know which variables might be missing for your dataset, and so it's important to approach with a research-informed mental model of what your analysis should look like to help avoid drawing poor conclusions from incomplete information. 

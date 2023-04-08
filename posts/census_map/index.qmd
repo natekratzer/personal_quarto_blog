@@ -8,9 +8,9 @@ image: "ky_internet.png"
 draft: false
 ---
 
-This post covers two useful skils, making maps and acessing Census data. Most of the python map making tutorials I found online showed how to make maps using data that already came with the library, and didn't have many notes on how the data is formatted or how to bring in new data.  
+This post covers two useful skils, making maps and accessing Census data. Most of the python map making tutorials I found online showed how to make maps using data that already came with the library, and didn't have many notes on how the data is formatted or how to bring in new data.  
 
-In addition to the standard analysis library `numpy` and `pandas`, we're going to use `GeoPandas` for mapping data and the `requests` library for getting Census data 
+In addition to the standard analysis libraries `numpy` and `pandas`, we're going to use `GeoPandas` for mapping data and the `requests` library for getting Census data 
 
 ```{python}
 import numpy as np
