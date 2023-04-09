@@ -1,0 +1,81 @@
+---
+title: "It's legal to build affordable housing on less than 5 percent of Louisville's land. We should change that."
+description: "About 70 percent of Louisville's land is reserved for single family dwellings, usually with minimum size requirements. Only 5 percent is zoned for multi-family use (e.g. apartments, duplexes). Multi-family housing is more affordable and we need to reduce the legal barriers to building it."
+date: '2023-04-08'
+categories: [Louisville, Poverty, Housing, Policy]
+toc: true
+image: ""
+draft: true
+---
+
+```{python}
+import numpy as np
+import pandas as pd
+import geopandas as gpd
+import altair as alt
+```
+
+
+```{python}
+#downloaded from: https://data.lojic.org/datasets/LOJIC::jefferson-county-ky-zoning-december-2020-1/explore
+#says it's 2020 in the title, but last updated Oct 2022
+lzone = gpd.read_file('lou_zoning.zip')
+```
+
+
+```{python}
+lzone.explore()
+```
+
+```{python}
+lzone['zone_use'] = "Other"
+
+# multi-family residential
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES MULTI-FAMILY', 'RES MULTI-FAMILY', 'RES MULTI-FAMILY OVERLAY', 'RES TWO-FAMILY']), 'Multi-Family Residential', lzone['zone_use'])
+
+# single family residential
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES SINGLE FAMILY', 'RES SINGLE FAMILY OVERLAY']), 'Single Family Residential', lzone['zone_use'])
+
+# commercial/industrial
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['COMMERCIAL', 'ENTERPRIZE ZONE', 'ENTERPRIZE ZONE OVERLAY', 'ENTERPRIZE ZONE', 'ENTERPRIZE ZONE OVERLAY', 'INDUSTRIAL', 'INDUSTRIAL OVERLAY', 'PLANNED EMPLOYMENT CENTER']), 'Commercial/Industrial', lzone['zone_use'])
+
+# rural
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RURAL RES OVERLAY', 'RURAL RESIDENTIAL']), 'Rural Residential', lzone['zone_use'])
+
+#calculate percent in each category
+lzone_small = lzone[['zone_use', 'Shape_Area']]
+zone_sums = lzone_small.groupby(by = ['zone_use']).sum().reset_index()
+zone_sums['percent'] = 100 * (zone_sums['Shape_Area'] / sum(zone_sums['Shape_Area']))
+
+zone_sums
+```
+
+```{python}
+zone_sums['chart_cats'] = np.where(zone_sums['zone_use'].isin(['Commercial/Industrial', 'Other', 'Rural Residential']), 'Other', zone_sums['zone_use'])
+
+#calculate percent in each category
+zone_sums_ch = zone_sums.groupby(by = ['chart_cats']).sum().reset_index()
+zone_sums_ch['percent'] = 100 * (zone_sums_ch['Shape_Area'] / sum(zone_sums_ch['Shape_Area']))
+
+zone_sums_ch['Percent'] = zone_sums_ch['percent'].round()
+
+
+
+colors = ['green', 'grey', 'red']
+
+base = alt.Chart(zone_sums_ch, title = "Only 5 percent of Louisville's land allows multi-family residential housing").encode(
+    theta = alt.Theta('percent', stack = True),
+    color = alt.Color('chart_cats', title = 'Zone', scale = alt.Scale(range = colors))
+)
+
+pie = base.mark_arc(innerRadius = 50, outerRadius = 120, opacity = 0.7)
+text = base.mark_text(radius = 90, size = 20).encode(text = "Percent", color = alt.value('black'))
+
+pie + text
+```
+
+```{python}
+
+```
+
+
