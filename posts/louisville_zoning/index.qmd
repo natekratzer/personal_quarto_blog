@@ -1,81 +1,213 @@
 ---
-title: "It's legal to build affordable housing on less than 5 percent of Louisville's land. We should change that."
-description: "About 70 percent of Louisville's land is reserved for single family dwellings, usually with minimum size requirements. Only 5 percent is zoned for multi-family use (e.g. apartments, duplexes). Multi-family housing is more affordable and we need to reduce the legal barriers to building it."
-date: '2023-04-08'
+title: "End Exclusionary Zoning"
+description: "Almost 75 percent of Louisville's land is reserved for single family dwellings. Only 5 percent is zoned for multi-family use (e.g. apartments, duplexes). Multi-family housing is more affordable we should make it easier to build"
+date: '2023-04-09'
 categories: [Louisville, Poverty, Housing, Policy]
+echo: false
 toc: true
-image: ""
-draft: true
+image: "lou_zoning_donut.png"
+draft: false
 ---
 
+## Affordable Housing and Municipal Zoning
+
+It is illegal to build affordable housing in most of Louisville. While there are a lot of contributing factors to the shortage of affordable housing in the U.S., one major reason it exists is because of policies we have _intentionally_ put in place to reduce the supply of housing out of fear of a possible decline in property values and having to share 'our neighborhoods' with people of different classes and races. It is illegal to [redline](https://www.lojic.org/redlining-louisville-news) a map and explicitly exclude people from buying in certain neighborhoods on the basis of race, but it is a legal and widespread practice to use zoning ordinances to restrict the supply of affordable housing and so in practice to ensure high levels of racial and economic segregation. 
+
+## Zoning in Louisville
+
+Louisville's zoning data is [available online](https://data.lojic.org/datasets/LOJIC::jefferson-county-ky-zoning-december-2020-1/explore) and is regularly updated. I used the most recent data available for download (it's a little unclear if it's from 2020 or 2022 in the documentation, but it's recent enough for this analysis) and divided the official zoning designations into four broad categories:
+
+- Multi-Family residential (affordable housing is legal in these areas)
+- Single Family Residential (restricting housing supply by mandating single family homes of a minimum size)
+- Commercial/Industrial (includes enterprise zones and anything else clearly commercial)
+- Other (several very small categories that are most likely related to commercial use, although this does include the ~1 percent of land that is zoned for both commercial and residential uses)
+
+An [overview of zoning types](https://apps.lojic.org/zoning/resources/zoningDistrictBasics.pdf#page=1) is provided by Louisville Government, and there is also an [official map](https://apps.lojic.org/zoning/) with additional details. 
+
+- The overwhelming majority (73%) of Louisville's land is reserved for single family dwellings.
+- Less than 5% of Louisville's land allows multi-family structures to be built, even if we restrict the analysis to residential land it's only 6% of residential land that allows multi-family dwellings. In other words _94 percent of residential land in Louisville is reserved for more expensive single family units_  
+
 ```{python}
+#import libraries
 import numpy as np
 import pandas as pd
 import geopandas as gpd
 import altair as alt
-```
+import folium
 
-
-```{python}
+#load data
 #downloaded from: https://data.lojic.org/datasets/LOJIC::jefferson-county-ky-zoning-december-2020-1/explore
 #says it's 2020 in the title, but last updated Oct 2022
 lzone = gpd.read_file('lou_zoning.zip')
-```
 
-
-```{python}
-lzone.explore()
-```
-
-```{python}
+# create four broad categories 
 lzone['zone_use'] = "Other"
 
 # multi-family residential
 lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES MULTI-FAMILY', 'RES MULTI-FAMILY', 'RES MULTI-FAMILY OVERLAY', 'RES TWO-FAMILY']), 'Multi-Family Residential', lzone['zone_use'])
 
 # single family residential
-lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES SINGLE FAMILY', 'RES SINGLE FAMILY OVERLAY']), 'Single Family Residential', lzone['zone_use'])
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES SINGLE FAMILY', 'RES SINGLE FAMILY OVERLAY', 'RURAL RES OVERLAY', 'RURAL RESIDENTIAL']), 'Single Family Residential', lzone['zone_use'])
+#lojic lists R-R as single family zoned: https://apps.lojic.org/zoning/resources/zoningDistrictBasics.pdf#page=5
+#see also lojic's larger map: https://apps.lojic.org/zoning/
 
 # commercial/industrial
-lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['COMMERCIAL', 'ENTERPRIZE ZONE', 'ENTERPRIZE ZONE OVERLAY', 'ENTERPRIZE ZONE', 'ENTERPRIZE ZONE OVERLAY', 'INDUSTRIAL', 'INDUSTRIAL OVERLAY', 'PLANNED EMPLOYMENT CENTER']), 'Commercial/Industrial', lzone['zone_use'])
-
-# rural
-lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RURAL RES OVERLAY', 'RURAL RESIDENTIAL']), 'Rural Residential', lzone['zone_use'])
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['COMMERCIAL', 'ENTERPRISE ZONE', 'ENTERPRISE ZONE OVERLAY', 'INDUSTRIAL', 'INDUSTRIAL OVERLAY', 'PLANNED EMPLOYMENT CENTER']), 'Commercial/Industrial', lzone['zone_use'])
 
 #calculate percent in each category
 lzone_small = lzone[['zone_use', 'Shape_Area']]
 zone_sums = lzone_small.groupby(by = ['zone_use']).sum().reset_index()
 zone_sums['percent'] = 100 * (zone_sums['Shape_Area'] / sum(zone_sums['Shape_Area']))
 
-zone_sums
-```
+#display percent value and set colors for chart
+zone_sums['Percent'] = zone_sums['percent'].round(1)
+zone_sums['Percent'] = zone_sums['Percent'].astype('string') + '%'
 
-```{python}
-zone_sums['chart_cats'] = np.where(zone_sums['zone_use'].isin(['Commercial/Industrial', 'Other', 'Rural Residential']), 'Other', zone_sums['zone_use'])
+# custom colors for the chart
+colors = ['brown', 'green', 'grey', 'red']
 
-#calculate percent in each category
-zone_sums_ch = zone_sums.groupby(by = ['chart_cats']).sum().reset_index()
-zone_sums_ch['percent'] = 100 * (zone_sums_ch['Shape_Area'] / sum(zone_sums_ch['Shape_Area']))
-
-zone_sums_ch['Percent'] = zone_sums_ch['percent'].round()
-
-
-
-colors = ['green', 'grey', 'red']
-
-base = alt.Chart(zone_sums_ch, title = "Only 5 percent of Louisville's land allows multi-family residential housing").encode(
+# pie chart with labels from altair
+# I had some trouble getting the labels to be inside the chart, because changing the color disconnects them from the rest of the data somehow, so when moved inside the chart they don't go where they belong. Might return to this, but didn't want to waste too much time on it. 
+base = alt.Chart(zone_sums, title = "Less than 5 percent of Louisville's land allows multi-family residential housing").encode(
     theta = alt.Theta('percent', stack = True),
-    color = alt.Color('chart_cats', title = 'Zone', scale = alt.Scale(range = colors))
+    color = alt.Color('zone_use', title = 'Zoning Category', scale = alt.Scale(range = colors))
 )
 
-pie = base.mark_arc(innerRadius = 50, outerRadius = 120, opacity = 0.7)
-text = base.mark_text(radius = 90, size = 20).encode(text = "Percent", color = alt.value('black'))
+pie = base.mark_arc(innerRadius = 50, outerRadius = 120, opacity = 0.8)
+text = base.mark_text(radius = 145, size = 18).encode(text = "Percent")
 
-pie + text
+# different browsers render a bit differently, so using an image instead.
+# pie + text
 ```
+![](lou_zoning_donut.png)
+
+We can also look at where multi-family dwellings are allowed. The small green patches represent multi-family housing. Typing an address into the search bar will place a marker on the map locating that address, making it easy to find the zoning for your residence. 
 
 ```{python}
+#trying to customize the colors to match
+lzone['color'] = 'grey'
 
+lzone['color'] = np.where(lzone['zone_use'] == 'Commercial/Industrial', 'brown', lzone['color'])
+lzone['color'] = np.where(lzone['zone_use'] == 'Multi-Family Residential', 'green', lzone['color'])
+lzone['color'] = np.where(lzone['zone_use'] == 'Single Family Residential', 'red', lzone['color'])
+
+def style_fn(x):
+    return{
+        'fillColor': x['properties']['color'],
+        'color' : x['properties']['color'],
+        'weight': 0.8
+    }
+
+#rename columns
+lzone = lzone.rename(columns = {'zone_use' : 'Zoning Category',
+                           'ZONING_NAM' : 'Zoning Name',
+                           'ZONING_COD': 'Zoning Code'})
+
+m = lzone.explore(tooltip = ['Zoning Category', 'Zoning Name', 'Zoning Code'], tiles = 'CartoDB positron', style_kwds = dict(style_function = style_fn), legend_kwds = dict(caption = 'Zoning Category'))
+
+#taking a legend solution from someone else's gist: https://nbviewer.org/gist/talbertc-usgs/18f8901fc98f109f2b71156cf3ac81cd
+
+from branca.element import Template, MacroElement
+
+template = """
+{% macro html(this, kwargs) %}
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+
+ 
+<div id='maplegend' class='maplegend' 
+    style='position: absolute; z-index:9999; border:2px solid grey; background-color:rgba(255, 255, 255, 0.8);
+     border-radius:6px; padding: 10px; font-size:14px; right: 20px; bottom: 20px;'>
+     
+<div class='legend-title'>Zoning Category</div>
+<div class='legend-scale'>
+  <ul class='legend-labels'>
+    <li><span style='background:green;opacity:0.5;'></span>Multi-Family Housing</li>
+    <li><span style='background:red;opacity:0.5;'></span>Single Family Housing</li>
+    <li><span style='background:brown;opacity:0.5;'></span>Commercial or Industrial</li>
+    <li><span style='background:grey;opacity:0.5;'></span>Other</li>
+  </ul>
+</div>
+</div>
+ 
+</body>
+</html>
+
+<style type='text/css'>
+  .maplegend .legend-title {
+    text-align: left;
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 90%;
+    }
+  .maplegend .legend-scale ul {
+    margin: 0;
+    margin-bottom: 5px;
+    padding: 0;
+    float: left;
+    list-style: none;
+    }
+  .maplegend .legend-scale ul li {
+    font-size: 80%;
+    list-style: none;
+    margin-left: 0;
+    line-height: 18px;
+    margin-bottom: 2px;
+    }
+  .maplegend ul.legend-labels li span {
+    display: block;
+    float: left;
+    height: 16px;
+    width: 30px;
+    margin-right: 5px;
+    margin-left: 0;
+    border: 1px solid #999;
+    }
+  .maplegend .legend-source {
+    font-size: 80%;
+    color: #777;
+    clear: both;
+    }
+  .maplegend a {
+    color: #777;
+    }
+</style>
+{% endmacro %}"""
+
+macro = MacroElement()
+macro._template = Template(template)
+
+m.get_root().add_child(macro)
+
+# add an address search bar? 
+# use policies: https://operations.osmfoundation.org/policies/nominatim/
+from folium import plugins
+plugins.Geocoder().add_to(m)
+
+m
 ```
 
 
+## Ending Exclusionary Zoning
+
+I was inspired to look at Louisville's zoning regulations after reading Matthew Desmond's new book _Poverty, By America_. It's a fantastic book, and one thing he emphasizes throughout is the many different ways in which we construct barriers that are intended to keep the poor in poverty. Moderning zoning acts as a wall to keep people out. 
+
+> You can learn a lot about a town from its walls. Our first walls were primitive things: sharpened tree trunks, mud and stone. We learned to dig trenches and build parapets. Someone in the American West invented barbed wire. Today, we fashion our walls out of something much more durable and dispiriting: money and laws. Zoning laws govern what kind of property can be built in a community, and because different kinds of properties generally house different kinds of people, those laws also govern who gets in and who does not. Like all walls, they determine so much; and like all walls, they are boring. There may be no phrase more soulless in the English language than "municipal zoning ordinance." Yet there is perhaps no better way to grasp the soul of a community than this. (p. 113 - 114)
+
+There is [good social science research](https://opportunityinsights.org/paper/newmto/) on the incredibly beneficial effect of moving to lower-poverty neighborhoods - even if the income of the individual moving is not changed. These moves are beneficial for adults, and they are especially beneficial for children. As Desmond points out, it almost feels silly to need to cite research to show that the environment children are in matters to them. Of course it does - that's why those of us who have children and are lucky enough to have choices spend so much time and money on shaping our children's environment, their schools and their neighborhood. 
+
+Deconcentrating poverty and ending neighborhood segregation is one of the first things we must do to reverse the impact of decades of [intentional policies](https://www.epi.org/publication/the-color-of-law-a-forgotten-history-of-how-our-government-segregated-america/) promoting segregation by race and income. Desmond writes:
+
+> How can we, at last, end our embrace of segregation? The most important thing we can do is to replace exclusionary zoning policies with inclusionary ordinances, tearing down our walls and using the rubble to build bridges. There are two parts to this. The first is to get rid of all the devious legal minutiae we've developed to keep low-income families out of high-opportunity neighborhoods, rules that make it illegal to build multifamily apartment complexes or smaller, more affordable homes. We cannot in good faith claim that our communities are antiracist or antipoverty if they continue to uphold exclusionary zoning - our politer, quieter means of promoting segregation. (p. 165-166)
+
+There is already at least one example of this in the United States. New Jersey's supreme court prohibited exclusionary zoning *and* required municipalities to provide their 'fair share' or affordable housing. As a result, they've seen a huge increase in affordable multi-family units being built across the state (Desmond, p. 169)
+
+It's long past time to tell our elected officials that we want to change our zoning codes and build more affordable housing. We should join in saying:
+
+> This Community's long-standing tradition of segregation stops with me. I refuse to deny other children opportunities my children enjoy by living here. Build it. (p. 170)

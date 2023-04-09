@@ -49,15 +49,13 @@ sp_grouped = alt.Chart(df, title = "Bill Depth and Bill Length by Species of Pen
 
 #x value first, then y 
 plt_grouped = sp_grouped + sp_grouped.transform_regression('bill_depth_mm', 'bill_length_mm', groupby = ['species']).mark_line()
-
-#rendering somehow loses the first image? Odd bug in quarto, I think.
-#but if print here it will correctly print later
-plt_ungrouped
 ```
 
 ## Misleading analysis from high level data
 
 ```{python}
+#| warning: false
+
 plt_ungrouped
 ```
 
