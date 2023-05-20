@@ -1,7 +1,7 @@
 ---
 title: "End Exclusionary Zoning"
-description: "Almost 75 percent of Louisville's land is reserved for single family dwellings. Only 5 percent is zoned for multi-family use (e.g. apartments, duplexes). Multi-family housing is more affordable we should make it easier to build"
-date: '2023-04-09'
+description: "Over half of Louisville's land is reserved for large single family dwellings. Only 6 percent is zoned for multi-family use."
+date: '2023-05-15'
 categories: [Louisville, Poverty, Housing, Policy]
 echo: false
 toc: true
@@ -11,21 +11,33 @@ draft: false
 
 ## Affordable Housing and Municipal Zoning
 
-It is illegal to build affordable housing in most of Louisville. While there are a lot of contributing factors to the shortage of affordable housing in the U.S., one major reason it exists is because of policies we have _intentionally_ put in place to reduce the supply of housing out of fear of a possible decline in property values and having to share 'our neighborhoods' with people of different classes and races. It is illegal to [redline](https://www.lojic.org/redlining-louisville-news) a map and explicitly exclude people from buying in certain neighborhoods on the basis of race, but it is a legal and widespread practice to use zoning ordinances to restrict the supply of affordable housing and so in practice to ensure high levels of racial and economic segregation. 
+It is illegal to build affordable housing in most of Louisville. While there are a lot of contributing factors to the shortage of affordable housing in the U.S., one major reason it exists is because of policies we have _intentionally_ put in place to reduce the supply of housing out of fear of a possible decline in property values and having to share 'our neighborhoods' with people of different classes and races. It is illegal to [redline](https://www.lojic.org/redlining-louisville-news) a map and explicitly exclude people from buying in certain neighborhoods on the basis of race, but it is a legal and widespread practice to use zoning ordinances to restrict the supply of affordable housing. In practice, zoning restrictions ensure high levels of racial and economic segregation. 
+
+### What is Multi-Family Housing and why is it more affordable?
+
+Multi-family housing includes a lot more than just large apartment complexes. There's a wide range of types of housing that can include multiple families. A [review of Louisville's current housing situation](https://storymaps.arcgis.com/stories/f8853c01b8f04d538dec785ba2ede0cc) refers to this as the 'missing middle housing'. Louisville currently has limited areas zoned for large apartment complexes and huge swathes of land dedicate exclusively to single family housing. 
+
+![An Illustration of the types of Housing made illegal by Louisville's current zoning](middle_housing.png)
+
+Single family housing starts out less affordable because it requires more land per person, but additional zoning restrictions around minimum lot sizes and required parking spaces also drive up the cost. If you want to learn a little more about zoning and housing prices in general, this is a [good 10 minute video](https://www.youtube.com/watch?v=0Flsg_mzG-M) explaining the key ways restricted zoning makes housing less affordable.
 
 ## Zoning in Louisville
 
-Louisville's zoning data is [available online](https://data.lojic.org/datasets/LOJIC::jefferson-county-ky-zoning-december-2020-1/explore) and is regularly updated. I used the most recent data available for download (it's a little unclear if it's from 2020 or 2022 in the documentation, but it's recent enough for this analysis) and divided the official zoning designations into four broad categories:
+Louisville's zoning data is [available online](https://data.lojic.org/datasets/LOJIC::jefferson-county-ky-zoning-december-2020-1/explore) and is regularly updated. I used the most recent data available for download (it's a little unclear if it's from 2020 or 2022 in the documentation, but it's recent enough for this analysis) and divided the official zoning designations into five broad categories:
 
-- Multi-Family residential (affordable housing is legal in these areas)
-- Single Family Residential (restricting housing supply by mandating single family homes of a minimum size)
-- Commercial/Industrial (includes enterprise zones and anything else clearly commercial)
-- Other (several very small categories that are most likely related to commercial use, although this does include the ~1 percent of land that is zoned for both commercial and residential uses)
+- Multi-Family residential: affordable housing is legal in these areas
+- Single Family Residential: restricting housing supply by mandating single family homes
+- Single Family Large Lot: highly restrictive zoning that requires a 9,000 sq. ft. lot size for single family dwellings. 
+- Commercial/Industrial: includes enterprise zones and anything else clearly commercial
+- Other: several very small categories that are most likely related to commercial use, although this does include the ~1 percent of land that is zoned for both commercial and residential uses
 
 An [overview of zoning types](https://apps.lojic.org/zoning/resources/zoningDistrictBasics.pdf#page=1) is provided by Louisville Government, and there is also an [official map](https://apps.lojic.org/zoning/) with additional details. 
 
+### Louisville is not zoned for affordable housing
+
 - The overwhelming majority (73%) of Louisville's land is reserved for single family dwellings.
-- Less than 5% of Louisville's land allows multi-family structures to be built, even if we restrict the analysis to residential land it's only 6% of residential land that allows multi-family dwellings. In other words _94 percent of residential land in Louisville is reserved for more expensive single family units_  
+- Only 6% of Louisville's land allows multi-family structures to be built, even if we restrict the analysis to residential land it's only 7% of residential land that allows multi-family dwellings. In other words, _93 percent of residential land in Louisville is reserved for more expensive single family units_
+- The most common single-family zoning code (R4 zoning) requires a 9,000 sq ft lot size, a requirement [first adopted by the city in 1963](https://storymaps.arcgis.com/stories/8cd986b3c5ab4f1c8bedba85f195662f). This type of zoning makes up a over half of Louisville's land and makes even single family homes more expensive than they would be if they could be built on smaller lots. 
 
 ```{python}
 #import libraries
@@ -44,12 +56,15 @@ lzone = gpd.read_file('lou_zoning.zip')
 lzone['zone_use'] = "Other"
 
 # multi-family residential
-lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES MULTI-FAMILY', 'RES MULTI-FAMILY', 'RES MULTI-FAMILY OVERLAY', 'RES TWO-FAMILY']), 'Multi-Family Residential', lzone['zone_use'])
+lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES MULTI FAMILY', 'RES MULTI-FAMILY', 'RES MULTI-FAMILY OVERLAY', 'RES TWO-FAMILY']), 'Multi-Family Residential', lzone['zone_use'])
 
 # single family residential
 lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['RES SINGLE FAMILY', 'RES SINGLE FAMILY OVERLAY', 'RURAL RES OVERLAY', 'RURAL RESIDENTIAL']), 'Single Family Residential', lzone['zone_use'])
 #lojic lists R-R as single family zoned: https://apps.lojic.org/zoning/resources/zoningDistrictBasics.pdf#page=5
 #see also lojic's larger map: https://apps.lojic.org/zoning/
+
+# single family, large lot
+lzone['zone_use'] = np.where(lzone['ZONING_COD'].isin(['R4', '(R4)']), 'Single Family, Large Lot', lzone['zone_use'])
 
 # commercial/industrial
 lzone['zone_use'] = np.where(lzone['ZONING_NAM'].isin(['COMMERCIAL', 'ENTERPRISE ZONE', 'ENTERPRISE ZONE OVERLAY', 'INDUSTRIAL', 'INDUSTRIAL OVERLAY', 'PLANNED EMPLOYMENT CENTER']), 'Commercial/Industrial', lzone['zone_use'])
@@ -64,11 +79,11 @@ zone_sums['Percent'] = zone_sums['percent'].round(1)
 zone_sums['Percent'] = zone_sums['Percent'].astype('string') + '%'
 
 # custom colors for the chart
-colors = ['brown', 'green', 'grey', 'red']
+colors = ['orange', 'green', 'grey', 'brown', 'red']
 
 # pie chart with labels from altair
 # I had some trouble getting the labels to be inside the chart, because changing the color disconnects them from the rest of the data somehow, so when moved inside the chart they don't go where they belong. Might return to this, but didn't want to waste too much time on it. 
-base = alt.Chart(zone_sums, title = "Less than 5 percent of Louisville's land allows multi-family residential housing").encode(
+base = alt.Chart(zone_sums, title = "Less than 6 percent of Louisville's land allows multi-family residential housing").encode(
     theta = alt.Theta('percent', stack = True),
     color = alt.Color('zone_use', title = 'Zoning Category', scale = alt.Scale(range = colors))
 )
@@ -81,15 +96,19 @@ text = base.mark_text(radius = 145, size = 18).encode(text = "Percent")
 ```
 ![](lou_zoning_donut.png)
 
+
+### Zoning Map
+
 We can also look at where multi-family dwellings are allowed. The small green patches represent multi-family housing. Typing an address into the search bar will place a marker on the map locating that address, making it easy to find the zoning for your residence. 
 
 ```{python}
 #trying to customize the colors to match
 lzone['color'] = 'grey'
 
-lzone['color'] = np.where(lzone['zone_use'] == 'Commercial/Industrial', 'brown', lzone['color'])
+lzone['color'] = np.where(lzone['zone_use'] == 'Commercial/Industrial', 'orange', lzone['color'])
 lzone['color'] = np.where(lzone['zone_use'] == 'Multi-Family Residential', 'green', lzone['color'])
-lzone['color'] = np.where(lzone['zone_use'] == 'Single Family Residential', 'red', lzone['color'])
+lzone['color'] = np.where(lzone['zone_use'] == 'Single Family Residential', 'brown', lzone['color'])
+lzone['color'] = np.where(lzone['zone_use'] == 'Single Family, Large Lot', 'red', lzone['color'])
 
 def style_fn(x):
     return{
@@ -129,8 +148,9 @@ template = """
 <div class='legend-scale'>
   <ul class='legend-labels'>
     <li><span style='background:green;opacity:0.5;'></span>Multi-Family Housing</li>
-    <li><span style='background:red;opacity:0.5;'></span>Single Family Housing</li>
-    <li><span style='background:brown;opacity:0.5;'></span>Commercial or Industrial</li>
+    <li><span style='background:brown;opacity:0.5;'></span>Single Family Residential</li>
+    <li><span style='background:red;opacity:0.5;'></span>Single Family, Large Lot</li>
+    <li><span style='background:orange;opacity:0.5;'></span>Commercial or Industrial</li>
     <li><span style='background:grey;opacity:0.5;'></span>Other</li>
   </ul>
 </div>
@@ -196,7 +216,7 @@ m
 
 ## Ending Exclusionary Zoning
 
-I was inspired to look at Louisville's zoning regulations after reading Matthew Desmond's new book _Poverty, By America_. It's a fantastic book, and one thing he emphasizes throughout is the many different ways in which we construct barriers that are intended to keep the poor in poverty. Moderning zoning acts as a wall to keep people out. 
+I was inspired to look at Louisville's zoning regulations after reading Matthew Desmond's new book _Poverty, By America_. It's a fantastic book, and one thing he emphasizes throughout is the many different ways in which we construct barriers that are intended to keep the poor in poverty. Modern zoning acts as a wall to keep people out. 
 
 > You can learn a lot about a town from its walls. Our first walls were primitive things: sharpened tree trunks, mud and stone. We learned to dig trenches and build parapets. Someone in the American West invented barbed wire. Today, we fashion our walls out of something much more durable and dispiriting: money and laws. Zoning laws govern what kind of property can be built in a community, and because different kinds of properties generally house different kinds of people, those laws also govern who gets in and who does not. Like all walls, they determine so much; and like all walls, they are boring. There may be no phrase more soulless in the English language than "municipal zoning ordinance." Yet there is perhaps no better way to grasp the soul of a community than this. (p. 113 - 114)
 
@@ -211,3 +231,29 @@ There is already at least one example of this in the United States. New Jersey's
 It's long past time to tell our elected officials that we want to change our zoning codes and build more affordable housing. We should join in saying:
 
 > This Community's long-standing tradition of segregation stops with me. I refuse to deny other children opportunities my children enjoy by living here. Build it. (p. 170)
+
+## How to Get Involved
+
+Louisville is currently [having meetings about zoning reform](https://louisvilleky.gov/planning-design/document/zoning-matters-flyer2023). Unfortunately, these meetings tend to be dominated by current homeowners who tend to oppose changes that would increase affordability. It's important that people who want to end exclusionary zoning make their voices heard either at [the meetings](https://louisvilleky.gov/planning-design/document/zoning-matters-flyer2023) or through [phone calls to elected representatives](https://louisvilleky.gov/government/metro-council/districts-1-26).
+
+## Recommended Resources
+
+### Local Organizations
+
+- [Coalition for the Homeless](https://louhomeless.org/)
+- [Metropolitan Housing Coalition](https://metropolitanhousing.org/)
+- [Look up Contact Info for your Metro Council Member](https://louisvilleky.gov/government/metro-council/districts-1-26)
+- [Land Development Code Reform](https://louisvilleky.gov/government/planning-design/land-development-code-reform): This is a current effort to reform Louisville's zoning codes
+
+### Local Analysis
+- [Code for this analysis](https://github.com/natekratzer/personal_quarto_blog/blob/main/posts/louisville_zoning/index.qmd)
+- [Confronting Racism in City Planning and Zoning](https://storymaps.arcgis.com/stories/8cd986b3c5ab4f1c8bedba85f195662f) by Louisville Metro Planning and Design Services
+- [State of Metropolitan Housing Report, 2022](https://metropolitanhousing.org/wp-content/uploads/2022/06/2022-SMHR_FINAL.pdf) by The Metropolitan Housing Coalition
+
+### Books about Race, Poverty, and Housing in the United States
+- [The Sum of Us](https://www.penguinrandomhouse.com/books/564989/the-sum-of-us-by-heather-mcghee/) by Heather McGhee
+- [Poverty, By America](https://www.nytimes.com/2023/03/09/magazine/poverty-by-america-matthew-desmond.html) by Matthew Desmond
+- [The Color of Law](https://www.epi.org/publication/the-color-of-law-a-forgotten-history-of-how-our-government-segregated-america/) by Richard Rothstein
+
+
+
