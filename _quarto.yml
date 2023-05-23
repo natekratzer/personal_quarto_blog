@@ -16,7 +16,7 @@ website:
         href: https://github.com/natekratzer
       - icon: mastodon
         href: https://fosstodon.org/@natekratzer
-  margin-header: subscribe.html
+  # margin-header: subscribe.html
 
 format:
   html:
