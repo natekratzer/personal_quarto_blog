@@ -2,7 +2,7 @@ project:
   type: website
 
 website:
-  title: "Nate Kratzer"
+  title: "Policy, Politics, and Data"
   site-url: https://www.natekratzer.com/
   description: "A data science blog"
   google-analytics: G-9PPZMMCZD8
@@ -14,13 +14,13 @@ website:
         href: index.xml
       - icon: github
         href: https://github.com/natekratzer
-      - icon: mastodon
-        href: https://fosstodon.org/@natekratzer
-  # margin-header: subscribe.html
+      - icon: threads
+        href: https://www.threads.net/@nate_kratzer
+  margin-header: subscribe.html
 
 format:
   html:
-    theme: cerulean
+    theme: litera
     css: styles.css
 comments: 
   utterances: 

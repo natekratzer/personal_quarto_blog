@@ -4,18 +4,13 @@ image: avatar.png
 about:
   template: jolla
   links:
-    - icon: mastodon
-      text: Mastodon
-      href: https://fosstodon.org/@natekratzer
-    - icon: linkedin
-      text: LinkedIn
-      href: https://www.linkedin.com/in/nate-kratzer-33540571/
+    - icon: threads
+      text: Threads
+      href: https://www.threads.net/@nate_kratzer
     - icon: github
       text: Github
       href: https://github.com/natekratzer
 
 ---
 
-I'm a data scientist with an interest in public policy, statistics, and coding. This blog is mostly to help me organize my thoughts, although I may sometimes also use it to share policy analysis. 
-
-I've also included a handful of posts about policy, economics, and religion from an old and deprecated blog that I used to run. 
+I'm a data scientist with an interest in public policy, statistics, and coding. This blog is mostly to help me organize my thoughts, but hopefully at least a few people will find it worth reading. 
