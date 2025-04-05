@@ -25,6 +25,9 @@ format:
 comments: 
   utterances: 
     repo: natekratzer/blog_comments
+
+execute:
+  freeze: auto
   
 
 
