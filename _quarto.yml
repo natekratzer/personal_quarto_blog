@@ -4,7 +4,7 @@ project:
 website:
   title: "Policy, Politics, and Data"
   site-url: https://www.natekratzer.com/
-  description: "A data science blog"
+  description: "A personal blog about policy, politics, and data"
   google-analytics: G-9PPZMMCZD8
   open-graph: true
   navbar:
