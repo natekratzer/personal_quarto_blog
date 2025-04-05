@@ -12,38 +12,38 @@ People want both low taxes and high quality government services, and one trick t
 
 One of the things that makes a discussion of waste, fraud, and abuse difficult is that there is, inevitably, at least some level of spending that could be classified as waste in any sufficiently large organization. This makes it difficult for politicans to defend against charges of waste, fraud, and abuse, as they fear looking foolish when an incident does come to light.
 
- ## The Government Accountability Office and Inspectors General
+### The Government Accountability Office and Inspectors General
 
  The most common response from Democrats has been to say something about supporting cutting waste, fraud, and abuse, but only if it is done well. The usually fail to point out that it already has been done well! 
 
- For the past 104 years, the (Government Accountability Office)[https://www.gao.gov/about/what-gao-does/history] has served as Congress's oversight on executive branch spending. Over time, it's authority has expanded from financial audits to performance audits, and it is a vital source of information about government overpayments as well as suggestions for accounting practices to reduce overpayment. 
+ For the past 104 years, the [Government Accountability Office](https://www.gao.gov/about/what-gao-does/history) has served as Congress's oversight on executive branch spending. Over time, it's authority has expanded from financial audits to performance audits, and it is a vital source of information about government overpayments as well as suggestions for accounting practices to reduce overpayment. 
 
- Inspectors General serve inside government agencies, and are (specifically charged to detect waste, fraud, and abuse)[https://www.ignet.gov/content/frequently-asked-questions]. You can see the results of their work on (oversight.gov)[https://www.oversight.gov]
+ Inspectors General serve inside government agencies, and are [specifically charged to detect waste, fraud, and abuse](https://www.ignet.gov/content/frequently-asked-questions). You can see the results of their work on [oversight.gov](https://www.oversight.gov)
 
- Both the GAO and the Inspectors General issue their reports publicly, over recommendations, and have saved the U.S. billions of dollars over the year. The best way to address waste, fraud, and abuse is to strengthen this type of oversight and implement their recommendations. Instead, the Trump Administration has (fired Inspectors General)[https://campaignlegal.org/update/significance-firing-inspectors-general-explained] and ignored the GAO. 
+ Both the GAO and the Inspectors General issue their reports publicly, over recommendations, and have saved the U.S. billions of dollars over the year. The best way to address waste, fraud, and abuse is to strengthen this type of oversight and implement their recommendations. Instead, the Trump Administration has [fired Inspectors General](https://campaignlegal.org/update/significance-firing-inspectors-general-explained) and ignored the GAO. 
 
-## DOGE
+### DOGE
 
 Rather than improve on existing work, President Trump appointed Elon Musk to run a newly created Department of Government Efficiency (DOGE). 
 
-DOGE produces a 'wall of receipts' of savings, but there are well documented issues with those claims, including eggregious errors, like (confusing 8 billion and 8 million)[https://www.nytimes.com/2025/02/18/upshot/doge-contracts-musk-trump.html] and constantly (making false claims)[https://www.nytimes.com/2025/03/13/upshot/musk-doge-changes-deletions.html?unlocked_article_code=1.304.pJHf.DTibHql8U3db&smid=url-share, including (claims of massive social security fraud)[https://apnews.com/article/social-security-payments-deceased-false-claims-doge-ed2885f5769f368853ac3615b4852cf7] that turn out to be based on his team's inability to understand the social security database. 
+DOGE produces a 'wall of receipts' of savings, but there are well documented issues with those claims, including eggregious errors, like [confusing 8 billion and 8 million](https://www.nytimes.com/2025/02/18/upshot/doge-contracts-musk-trump.html] and constantly [making false claims](https://www.nytimes.com/2025/03/13/upshot/musk-doge-changes-deletions.html?unlocked_article_code=1.304.pJHf.DTibHql8U3db&smid=url-share), including [claims of massive social security fraud](https://apnews.com/article/social-security-payments-deceased-false-claims-doge-ed2885f5769f368853ac3615b4852cf7) that turn out to be based on his team's inability to understand the social security database. 
 
 Even those receipts that are genuine savings are usually not in the category of waste, fraud, and abuse, but are instead spending that the administration disagrees with. It's normal politics for different administrations to have different spending priorities, but it's not the same thing as eliminating waste, fraud, and abuse. 
 
-## Efficiency is a lot more than just eliminating waste, fraud, and abuse
+### Efficiency is a lot more than just eliminating waste, fraud, and abuse
 
 An underdiscussed irony of this whole charade is that the processes and procedures required to reduce or eliminate waste, fraud, and abuse inherently reduce efficiency, and so DOGE's department name is at odds with it's rhetorical focus on waste. 
 
 To prevent government contracts from being given out as personal favors the government has clear standards for contracts and an involved approval process that requires several people to approve each contract. This is, in an immediate sense, extremely time consuming and inefficient relative to a system where one person has control and can quickly decide on a contractor to use and execute a contract. But systems that are efficient in the sense of being able to move quickly are often prone to abuse because they have fewer veto points that provide checks against individuals abusing the system. More process and procedures means slow and 'inefficient' outcomes, but less waste, fraud, and abuse. There is no way around this tradeoff. 
 
-## Medical Provider Fraud 
+### Medical Provider Fraud 
 
-A type of fraud that illustrates this efficiency v waste tradeoff well is medical provider fraud. This is worth highlighting, because improper payments to medical providers is something (the GAO has consistently highlighted)[https://www.gao.gov/products/gao-24-107487#:~:text=What%20GAO%20Found,agencies%20reported%20for%20that%20year.].
+A type of fraud that illustrates this efficiency v waste tradeoff well is medical provider fraud. This is worth highlighting, because improper payments to medical providers is something [the GAO has consistently highlighted](https://www.gao.gov/products/gao-24-107487#:~:text=What%20GAO%20Found,agencies%20reported%20for%20that%20year.).
 
 The reason this is a consistent theme though is because actually eliminating medical provider fraud is hard work. When a medical provider performs a procedure they then bill the insurer and provide some amount of documentation around the procedure. The more documentation is required, the easier it is to detect potential fraud in the form of lying about which procedures occured. (e.g. claiming a more expensive procedure in place of a cheaper one, or even making up a procedure entirely). But additional paperwork and evidence is not free either - it costs in the form of Doctor and staff time as well as in needing investigators who can look into any irregularities and determine the difference between fraud and administrative error.
 
 Crack down too hard on this type of fraud and we wind up with honest providers who spend more time doing paperwork and documentation than actually providing care - a very inefficient set up. At the same time, we clearly don't want to simply accept any claim from any provider with no documentation other than the billing code for the procedure. Like most problems of actual governance, this is hard problem where we need to figure out a way to strike a balance between reducing improper and fraudulent payments and not making the system so inefficient that we lose far more in the cost of time spent on documentation than we would have lost in incidents of fraud.
 
-## No simple solution
+### No simple solution
 
 There is no simple solution that allows us to magically eliminate waste, fraud, and abuse. It requires ongoing effort and being willing to pay the cost of funding audits and the inefficiency of requiring providers to spend their time on proof of service rather than on actually providing services. Like most areas of human existence, I'm sure we don't have this one exactly right, but improvements require actualy doing the hard work to figure out both what balance to strike between waste and inefficiency and to identify actual cases of waste. 
