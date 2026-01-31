@@ -23,8 +23,8 @@ format:
     theme: litera
     css: styles.css
 comments: 
-  utterances: 
-    repo: natekratzer/blog_comments
+  hypothesis: 
+    theme: clean
 
 execute:
   freeze: auto
