@@ -8,6 +8,9 @@ listing:
   sort-ui: false
   filter-ui: false
   feed: true
+    items: 10
+    type: partial
+  date-format: iso
 page-layout: full
 title-block-banner: false
 ---
