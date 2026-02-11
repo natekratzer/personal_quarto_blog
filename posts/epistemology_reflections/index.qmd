@@ -1,0 +1,57 @@
+---
+title: "But how do you know?"
+description: "Reflections on Social Epistemology"
+date: '2026-02-11'
+categories: [Philosophy, Epistemology]
+image: 
+draft: true
+toc: true
+---
+
+One of the many issues we've had in an era of political polarization is that people no longer seem to agree on matters of fact. There's been a fair amount written about echo chambers and partisan media and all of the social factors that go into this division, but I want to go a step deeper and think not just about the immediate source of information that people turn to, but the way in which people claim to know things in the first place. 
+
+There are several ways that people can claim to know something, and I'm going to divide them into five broad categories: 
+
+1. Divine Revelation
+2. Social Authority
+3. Lived Experience
+4. Science 
+5. Philosophical Reasoning 
+
+## Divine Revelation
+
+In this approach, knowledge comes from a divine source. In practice this is generally mediated by some sort of written tradition or religious institution. 'The Bible Says It, So I Believe It' is one way this gets phrased in the evangelical Christian tradition. This leaves aside the difficulties of interpretation of religious texts and of choices between different claims of divine revelations by different traditions. 
+
+Issues of interpretation and religious pluralism make this difficult to unite a diverse public around, but a non-trivial amount of U.S. political discourse is justified by claims of knowledge that come from divine revelation. 
+
+## Social Authority
+
+This is believing something is true because someone in a position of authority told you it is true. 
+
+- Includes trusted media, which may differ. People subscribing to social authority may still have wildly different beliefs
+
+
+## Lived Experience
+
+- Expert in own lived experience, but this is very narrow expertise. 
+- Doesn't generalize
+- It is certainly true that it is painful to have your experiences dismissed and I think it's also true that socially we have been and still are too likely to be dismissive. That said, there are valid limits to how much we can learn from lived experience. If a cancer patient got better by eating nothing but skittles that's great news for them, but does not mean that skittles cures cancer. 
+- We don't let people be the own ultimate arbiters of how they have been affected by something. If someone is the victim of a crime they don't get to set the punishment or restitution. Their testimony is important and is weighed by a jury of people who are impartial. 
+
+## Science
+
+- reproducible 
+- verifiable 
+- doesn't cover everything we might wish to know about, only covers pieces of many things (e.g. we might know the presidential systems are more prone to democratic backsliding than parliamentary ones, but that, by itself, does not tell us if we should favor parliamentary systems or presidential ones. We also need to know other advantages and disadvantages, figure out how much each one matters to us and also be in agreement that democratic backsliding is bad before this type of scientific observation comes into play. )
+- science is hard
+- science is done by fallible people 
+
+- during Covid-19 early days, may people wanted science to work like divine revelation or social authority. A set of claims that are true by definition instead of a set of claims that are always open to revision based on additional scientific work to gather more information. 
+
+## Philosophical Reasoning
+
+- The importance of impartiality. Adam Smith's impartial spectator, Rawl's Viel of Justice, T.M. Scanlon's Reasonable Person, and most famously trial by jury. 
+- Objectivity cannot be obtained, but I don't think that means it must be thrown out as an unworthy goal. It's a good goal, it's just not one we can accomplish. 
+
+
+Can political liberalism (philosophically speaking, not liberal v conservative) accomodate epistemic disagreements? 
